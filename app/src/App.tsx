@@ -3,12 +3,18 @@ import {
   initializeSnowplow,
   trackProductViewEvent,
   trackAddToCartEvent,
+  resetUserData,
 } from "./snowplow";
 
 import {
   addInterventionHandlers,
   Intervention,
 } from "@snowplow/signals-browser-plugin";
+
+interface AppConfig {
+  collectorUrl: string;
+  profilesApiUrl: string;
+}
 
 interface Product {
   id: number;
@@ -26,6 +32,80 @@ interface BannerIntervention {
   type: string;
   message: string;
   code?: string;
+}
+
+interface WelcomeScreenProps {
+  onConfigSubmit: (config: AppConfig) => void;
+}
+
+function WelcomeScreen({ onConfigSubmit }: WelcomeScreenProps) {
+  const [collectorUrl, setCollectorUrl] = useState(() => {
+    return localStorage.getItem("snowplow_collector_url") || "";
+  });
+  const [profilesApiUrl, setProfilesApiUrl] = useState(() => {
+    return localStorage.getItem("snowplow_profiles_api_url") || "";
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (collectorUrl && profilesApiUrl) {
+      // Save to localStorage
+      localStorage.setItem("snowplow_collector_url", collectorUrl);
+      localStorage.setItem("snowplow_profiles_api_url", profilesApiUrl);
+      onConfigSubmit({ collectorUrl, profilesApiUrl });
+    }
+  };
+
+  return (
+    <div className="app">
+      <div className="welcome-screen">
+        <div className="welcome-content">
+          <h1>🛍️ Snowplow Signals E-Shop</h1>
+          <p className="welcome-subtitle">
+            Demo application showcasing Snowplow Signals personalization
+          </p>
+
+          <div className="welcome-intro">
+            <p>
+              Welcome! Please configure your Snowplow settings to get started.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="config-form">
+            <div className="form-group">
+              <label htmlFor="collectorUrl">Collector URL</label>
+              <input
+                type="url"
+                id="collectorUrl"
+                value={collectorUrl}
+                onChange={(e) => setCollectorUrl(e.target.value)}
+                placeholder="https://collector-example.snowplow.io"
+                required
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="profilesApiUrl">Profiles API URL</label>
+              <input
+                type="url"
+                id="profilesApiUrl"
+                value={profilesApiUrl}
+                onChange={(e) => setProfilesApiUrl(e.target.value)}
+                placeholder="https://your-endpoint.signals.snowplowanalytics.com"
+                required
+                className="form-input"
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary btn-large">
+              Start Shopping
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface ProductModalProps {
@@ -175,7 +255,12 @@ function ProductCard({ product, onViewProduct }: ProductCardProps) {
   );
 }
 
-function AppContent() {
+interface AppContentProps {
+  config: AppConfig;
+  onEditConfig: () => void;
+}
+
+function AppContent({ config, onEditConfig }: AppContentProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [intervention, setIntervention] = useState<BannerIntervention | null>(
@@ -185,7 +270,7 @@ function AppContent() {
 
   useEffect(() => {
     // Initialize Snowplow tracking
-    initializeSnowplow();
+    initializeSnowplow(config.collectorUrl, config.profilesApiUrl);
 
     fetch("https://dummyjson.com/products")
       .then((response) => response.json())
@@ -228,7 +313,7 @@ function AppContent() {
         }, 60000);
       },
     });
-  }, []);
+  }, [config.collectorUrl, config.profilesApiUrl]);
 
   const closeIntervention = () => {
     setIntervention(null);
@@ -240,6 +325,13 @@ function AppContent() {
 
   const closeProductModal = () => {
     setSelectedProduct(null);
+  };
+
+  const handleResetUserData = () => {
+    resetUserData();
+    alert(
+      "User data has been reset. Attributes will be recalculated and interventions will trigger again.",
+    );
   };
 
   if (loading) {
@@ -260,6 +352,14 @@ function AppContent() {
       <header className="header">
         <h1>🛍️ Snowplow Signals E-Shop</h1>
         <p>Demo application showcasing Snowplow Signals personalization</p>
+        <div className="header-buttons">
+          <button className="btn btn-secondary" onClick={onEditConfig}>
+            Edit Configuration
+          </button>
+          <button className="btn btn-reset" onClick={handleResetUserData}>
+            Reset User Data
+          </button>
+        </div>
       </header>
 
       <div className="main-content">
@@ -282,7 +382,21 @@ function AppContent() {
 }
 
 function App() {
-  return <AppContent />;
+  const [config, setConfig] = useState<AppConfig | null>(null);
+
+  const handleConfigSubmit = (newConfig: AppConfig) => {
+    setConfig(newConfig);
+  };
+
+  const handleEditConfig = () => {
+    setConfig(null);
+  };
+
+  if (!config) {
+    return <WelcomeScreen onConfigSubmit={handleConfigSubmit} />;
+  }
+
+  return <AppContent config={config} onEditConfig={handleEditConfig} />;
 }
 
 export default App;

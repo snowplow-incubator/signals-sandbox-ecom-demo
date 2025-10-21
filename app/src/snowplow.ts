@@ -1,9 +1,18 @@
-import { newTracker, setUserId, clearUserData, BrowserTracker } from '@snowplow/browser-tracker';
-import { SnowplowEcommercePlugin, trackAddToCart, trackProductView } from '@snowplow/browser-plugin-snowplow-ecommerce';
+import {
+  newTracker,
+  setUserId,
+  clearUserData,
+  BrowserTracker,
+} from "@snowplow/browser-tracker";
+import {
+  SnowplowEcommercePlugin,
+  trackAddToCart,
+  trackProductView,
+} from "@snowplow/browser-plugin-snowplow-ecommerce";
 import {
   SignalsInterventionsPlugin,
-  subscribeToInterventions
-} from '@snowplow/signals-browser-plugin';
+  subscribeToInterventions,
+} from "@snowplow/signals-browser-plugin";
 
 interface Product {
   id: number;
@@ -13,29 +22,27 @@ interface Product {
   price: number;
 }
 
-const SIGNALS_API_URL = process.env.REACT_APP_SIGNALS_API_URL || 'https://your-signals-endpoint.signals.snowplowanalytics.com';
-const SNOWPLOW_COLLECTOR_URL = process.env.REACT_APP_SNOWPLOW_COLLECTOR_URL || 'https://collector-sales-aws.snowplow.io';
-
 let isInitialized = false;
 export let tracker: BrowserTracker | undefined | null = undefined;
 
-export const initializeSnowplow = (userId?: string) => {
+export const initializeSnowplow = (
+  collectorUrl: string,
+  signalsApiUrl: string,
+  userId?: string,
+) => {
   if (!isInitialized) {
-    tracker = newTracker('sp', SNOWPLOW_COLLECTOR_URL, {
-      appId: 'ai_demo',
+    tracker = newTracker("sp", collectorUrl, {
+      appId: "ai_demo",
       discoverRootDomain: true,
-      cookieSameSite: 'Lax',
+      cookieSameSite: "Lax",
       contexts: {
-        webPage: true
+        webPage: true,
       },
-      plugins: [
-        SnowplowEcommercePlugin(),
-        SignalsInterventionsPlugin(),
-      ],
+      plugins: [SnowplowEcommercePlugin(), SignalsInterventionsPlugin()],
     });
 
     subscribeToInterventions({
-      endpoint: SIGNALS_API_URL,
+      endpoint: signalsApiUrl,
     });
 
     isInitialized = true;
@@ -48,7 +55,7 @@ export const initializeSnowplow = (userId?: string) => {
 };
 
 export const updateSnowplowUser = (userId: string, userEmail?: string) => {
-  console.log('Updating Snowplow user:', userId);
+  console.log("Updating Snowplow user:", userId);
 
   // Clear previous user data
   clearUserData();
@@ -57,8 +64,13 @@ export const updateSnowplowUser = (userId: string, userEmail?: string) => {
   setUserId(userId);
 };
 
+export const resetUserData = () => {
+  console.log("Resetting user data");
+  clearUserData();
+};
+
 export const trackProductViewEvent = (product: Product) => {
-  console.log('trackProductView', product);
+  console.log("trackProductView", product);
   trackProductView({
     id: String(product.id),
     name: product.title,
@@ -70,7 +82,7 @@ export const trackProductViewEvent = (product: Product) => {
 };
 
 export const trackAddToCartEvent = (product: Product) => {
-  console.log('trackAddToCart', product);
+  console.log("trackAddToCart", product);
   trackAddToCart({
     products: [
       {

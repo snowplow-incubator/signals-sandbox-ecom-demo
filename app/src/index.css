@@ -19,6 +19,22 @@ body {
   padding: 20px;
   background-color: #f8f9fa;
   border-radius: 8px;
+  position: relative;
+}
+
+.header h1 {
+  margin: 0 0 10px 0;
+}
+
+.header p {
+  margin: 0 0 15px 0;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .products-grid {
@@ -80,6 +96,10 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.2s;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
@@ -273,4 +293,98 @@ body {
 
 .btn-secondary:hover {
   background-color: #5a6268;
+}
+
+.btn-reset {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-reset:hover {
+  background-color: #c0392b;
+}
+
+/* Welcome Screen Styles */
+.welcome-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.welcome-content {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-content h1 {
+  text-align: center;
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 32px;
+}
+
+.welcome-subtitle {
+  text-align: center;
+  color: #666;
+  margin: 0 0 30px 0;
+  font-size: 14px;
+}
+
+.welcome-intro {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-left: 4px solid #667eea;
+}
+
+.welcome-intro p {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-input {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-large {
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 10px;
 }
