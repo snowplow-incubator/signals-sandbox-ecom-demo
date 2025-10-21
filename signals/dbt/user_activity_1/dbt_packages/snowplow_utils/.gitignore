@@ -1,9 +1,0 @@
-target/
-dbt_modules/
-dbt_packages/
-logs/
-venv/
-.DS_Store
-dbt-service-account.json
-.vscode/settings.json
-package-lock.yml
