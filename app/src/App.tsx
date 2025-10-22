@@ -257,10 +257,9 @@ function ProductCard({ product, onViewProduct }: ProductCardProps) {
 
 interface AppContentProps {
   config: AppConfig;
-  onEditConfig: () => void;
 }
 
-function AppContent({ config, onEditConfig }: AppContentProps) {
+function AppContent({ config }: AppContentProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [intervention, setIntervention] = useState<BannerIntervention | null>(
@@ -355,9 +354,6 @@ function AppContent({ config, onEditConfig }: AppContentProps) {
         <h1>🛍️ Snowplow Signals E-Shop</h1>
         <p>Demo application showcasing Snowplow Signals personalization</p>
         <div className="header-buttons">
-          <button className="btn btn-secondary" onClick={onEditConfig}>
-            Edit Configuration
-          </button>
           <button className="btn btn-reset" onClick={handleResetUserData}>
             Reset User Data
           </button>
@@ -390,15 +386,11 @@ function App() {
     setConfig(newConfig);
   };
 
-  const handleEditConfig = () => {
-    setConfig(null);
-  };
-
   if (!config) {
     return <WelcomeScreen onConfigSubmit={handleConfigSubmit} />;
   }
 
-  return <AppContent config={config} onEditConfig={handleEditConfig} />;
+  return <AppContent config={config} />;
 }
 
 export default App;
