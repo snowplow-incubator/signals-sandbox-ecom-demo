@@ -271,6 +271,8 @@ function AppContent({ config, onEditConfig }: AppContentProps) {
   useEffect(() => {
     // Initialize Snowplow tracking
     initializeSnowplow(config.collectorUrl, config.profilesApiUrl);
+    // Reset domain_userid on every page reload
+    resetUserData();
 
     fetch("https://dummyjson.com/products")
       .then((response) => response.json())
